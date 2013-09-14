@@ -50,6 +50,9 @@ func (t *RevalidationTransport) RoundTrip(req *http.Request) (resp *http.Respons
 	return transport.RoundTrip(req)
 }
 
+// hasCacheValidator returns true if the headers contain cache validators. See
+// http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3 for more
+// information.
 func hasCacheValidator(headers http.Header) bool {
 	return headers.Get("if-none-match") != "" || headers.Get("if-modified-since") != ""
 }
