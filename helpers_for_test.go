@@ -16,17 +16,20 @@ func mustParseURL(t *testing.T, urlstr string) *url.URL {
 	return u
 }
 
-func httpGet(t *testing.T, url *url.URL) (res *http.Response) {
-	req, err := http.NewRequest("GET", url.String(), nil)
+func httpGet(t *testing.T, url *url.URL) *http.Response {
+	resp, err := http.Get(url.String())
+	if err != nil {
+		t.Fatal("http.Get", err)
+	}
+	return resp
+}
+
+func newHTTPGETRequest(t *testing.T, url string) *http.Request {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal("http.NewRequest", err)
 	}
-
-	res, err = http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatal("http.DefaultClient.Do", err)
-	}
-	return
+	return req
 }
 
 func readAll(t *testing.T, rdr io.ReadCloser) []byte {
