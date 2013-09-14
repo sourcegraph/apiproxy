@@ -33,6 +33,13 @@ type RevalidationTransport struct {
 	Transport http.RoundTripper
 }
 
+// NeverRevalidate is a RevalidateFunc for use with RevalidationTransport that
+// causes HTTP requests to never revalidate cache entries. If a cache entry
+// exists, it will always be used, even if it is expired.
+func NeverRevalidate(_ *http.Request) bool {
+	return false
+}
+
 // RoundTrip takes a Request and returns a Response.
 func (t *RevalidationTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	if t.Revalidate != nil && hasCacheValidator(req.Header) && !t.Revalidate(req) {

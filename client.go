@@ -55,6 +55,8 @@ func (t *RequestModifyingTransport) Override(requestURI *regexp.Regexp, setHeade
 	t.overrides[requestURI] = requestOverride{setHeaders, runOnlyOnce}
 }
 
+var NoCache = http.Header{"Cache-Control": []string{"no-cache"}}
+
 // applyOverrides applies the transport's request overrides to req. If any
 // overrides apply, req is cloned and the overrides are applied to the clone.
 func (t *RequestModifyingTransport) applyOverrides(req *http.Request) *http.Request {
