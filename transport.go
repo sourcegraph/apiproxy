@@ -1,6 +1,8 @@
 package apiproxy
 
 import (
+	"bytes"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -38,6 +40,7 @@ func (t *RevalidationTransport) RoundTrip(req *http.Request) (resp *http.Respons
 			Request:          req,
 			TransferEncoding: req.TransferEncoding,
 			StatusCode:       http.StatusNotModified,
+			Body:             ioutil.NopCloser(bytes.NewReader([]byte(""))),
 		}
 		return
 	}
