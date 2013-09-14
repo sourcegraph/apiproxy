@@ -38,7 +38,13 @@ func TestRevalidationTransport_RevalidateFunc(t *testing.T) {
 		Transport: mockTransport,
 	}
 
-	resp, err := transport.RoundTrip(&http.Request{})
+	req, err := http.NewRequest("GET", "", nil)
+	if err != nil {
+		t.Error("NewRequest", err)
+	}
+	req.Header.Add("if-none-match", `"foo"`)
+
+	resp, err := transport.RoundTrip(req)
 	if err != nil {
 		t.Error("RoundTrip", err)
 	}

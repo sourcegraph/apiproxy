@@ -12,6 +12,15 @@ type RevalidateFunc func(req *http.Request) bool
 // RevalidationTransport is an implementation of net/http.RoundTripper that
 // permits custom behavior with respect to cache entry revalidation for
 // resources on the target server.
+//
+// If the request contains cache validators (an If-None-Match or
+// If-Modified-Since header), then Revalidate is called to determine whether the
+// cache entry should be revalidated (by being passed to the underlying
+// transport). In this way, the Revalidate function can effectively extend or shorten cache
+// age limits.
+//
+// If the request does not contain cache validators, then it is passed to the
+// underlying transport.
 type RevalidationTransport struct {
 	// Revalidate is called on each request in RoundTrip. If it returns true,
 	// RoundTrip synthesizes and returns an HTTP 304 Not Modified response.
@@ -24,7 +33,7 @@ type RevalidationTransport struct {
 
 // RoundTrip takes a Request and returns a Response.
 func (t *RevalidationTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
-	if t.Revalidate != nil && !t.Revalidate(req) {
+	if t.Revalidate != nil && hasCacheValidator(req.Header) && !t.Revalidate(req) {
 		resp = &http.Response{
 			Request:          req,
 			TransferEncoding: req.TransferEncoding,
@@ -39,4 +48,8 @@ func (t *RevalidationTransport) RoundTrip(req *http.Request) (resp *http.Respons
 	}
 
 	return transport.RoundTrip(req)
+}
+
+func hasCacheValidator(headers http.Header) bool {
+	return headers.Get("if-none-match") != "" || headers.Get("if-modified-since") != ""
 }
