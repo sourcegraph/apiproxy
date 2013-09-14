@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gregjones/httpcache"
 	"github.com/sourcegraph/apiproxy"
+	"github.com/sourcegraph/httpcache"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 var bindAddr = flag.String("http", ":8080", "HTTP bind address for proxy")
@@ -46,9 +47,9 @@ func main() {
 	proxy := apiproxy.NewCachingSingleHostReverseProxy(targetURL)
 	cachingTransport := proxy.Transport.(*httpcache.Transport)
 	cachingTransport.Transport = &apiproxy.RevalidationTransport{
-		Revalidate: func(r *http.Request) bool {
+		Check: apiproxy.ValidatorFunc(func(url *url.URL, age time.Duration) bool {
 			return !*neverRevalidate
-		},
+		}),
 	}
 
 	http.Handle("/", proxy)

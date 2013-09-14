@@ -1,7 +1,7 @@
 package apiproxy
 
 import (
-	"github.com/gregjones/httpcache"
+	"github.com/sourcegraph/httpcache"
 	"net/http"
 	"net/http/httputil"
 	"net/url"

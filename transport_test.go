@@ -2,17 +2,18 @@ package apiproxy
 
 import (
 	"errors"
+	"github.com/sourcegraph/httpcache"
 	"net/http"
 	"testing"
 )
 
-func TestRevalidationTransport_NilRevalidateFunc(t *testing.T) {
+func TestRevalidationTransport_NoValidator(t *testing.T) {
 	mockTransport := newMockTransport()
-	mockTransport.defaultResponse = &http.Response{}
+	mockTransport.defaultResponse = &http.Response{Header: http.Header{}}
 
 	transport := &RevalidationTransport{
-		Revalidate: nil,
-		Transport:  mockTransport,
+		Check:     nil,
+		Transport: mockTransport,
 	}
 
 	resp, err := transport.RoundTrip(&http.Request{})
@@ -27,19 +28,18 @@ func TestRevalidationTransport_NilRevalidateFunc(t *testing.T) {
 	}
 }
 
-func TestRevalidationTransport_RevalidateFunc(t *testing.T) {
+func TestRevalidationTransport_NeverRevalidate(t *testing.T) {
 	mockTransport := newMockTransport()
-	mockTransport.defaultResponse = &http.Response{}
+	mockTransport.defaultResponse = &http.Response{Header: http.Header{}}
 
 	transport := &RevalidationTransport{
-		Revalidate: func(req *http.Request) bool {
-			return false
-		},
+		Check:     NeverRevalidate,
 		Transport: mockTransport,
 	}
 
 	req := newHTTPGETRequest(t, "")
 	req.Header.Add("if-none-match", `"foo"`)
+	req.Header.Add(httpcache.XCacheAge, `10`)
 
 	resp, err := transport.RoundTrip(req)
 	if err != nil {
