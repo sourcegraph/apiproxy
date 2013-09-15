@@ -1,5 +1,7 @@
 language: go
 
+env: GOBIN=~/bin PATH=$PATH:$GOBIN
+
 go:
   - 1.1
   - tip
