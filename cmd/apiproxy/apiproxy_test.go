@@ -27,7 +27,10 @@ func Example() {
 
 	// Start apiproxy.
 	cmd := exec.Command(program, "-http=:8090", "-never-revalidate", "-only-revalidate-older-than=24h", target.URL)
-	cmd.Start()
+	err := cmd.Start()
+	if err != nil {
+		log.Fatalf("Failed to start %s: %s\n", program, err)
+	}
 	defer cmd.Process.Kill()
 	time.Sleep(150 * time.Millisecond)
 
