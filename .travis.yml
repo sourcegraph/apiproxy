@@ -1,6 +1,6 @@
 language: go
 
-env: GOBIN=~/bin PATH=$PATH:$GOBIN
+env: PATH=$PATH:$GOBIN:$HOME/gopath/bin
 
 go:
   - 1.1
