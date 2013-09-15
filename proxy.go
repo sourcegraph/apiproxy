@@ -7,9 +7,14 @@ import (
 	"net/url"
 )
 
-func NewCachingSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {
+// NewCachingSingleHostReverseProxy constructs a caching reverse proxy handler for
+// target. If cache is nil, a volatile, in-memory cache is used.
+func NewCachingSingleHostReverseProxy(target *url.URL, cache httpcache.Cache) *httputil.ReverseProxy {
 	proxy := NewSingleHostReverseProxy(target)
-	proxy.Transport = httpcache.NewMemoryCacheTransport()
+	if cache == nil {
+		cache = httpcache.NewMemoryCache()
+	}
+	proxy.Transport = httpcache.NewTransport(cache)
 	return proxy
 }
 

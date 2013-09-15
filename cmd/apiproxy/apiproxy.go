@@ -57,7 +57,7 @@ func main() {
 		}
 	}
 
-	proxy := apiproxy.NewCachingSingleHostReverseProxy(targetURL)
+	proxy := apiproxy.NewCachingSingleHostReverseProxy(targetURL, httpcache.NewMemoryCache())
 	cachingTransport := proxy.Transport.(*httpcache.Transport)
 	cachingTransport.Transport = &apiproxy.RevalidationTransport{
 		Check: apiproxy.ValidatorFunc(func(url *url.URL, age time.Duration) bool {

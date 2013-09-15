@@ -25,7 +25,7 @@ func TestNewCachingSingleHostReverseProxy(t *testing.T) {
 
 	// Start the reverse proxy.
 	proxyMux := http.NewServeMux()
-	proxyMux.Handle("/", NewCachingSingleHostReverseProxy(targetURL))
+	proxyMux.Handle("/", NewCachingSingleHostReverseProxy(targetURL, nil))
 	proxy := httptest.NewServer(proxyMux)
 	defer proxy.Close()
 	proxyURL := mustParseURL(t, proxy.URL)
