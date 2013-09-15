@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/sourcegraph/apiproxy"
 	"github.com/sourcegraph/httpcache"
 	"log"
@@ -70,7 +71,7 @@ func main() {
 		}),
 	}
 
-	http.Handle("/", proxy)
+	http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, proxy))
 
 	fmt.Fprintf(os.Stderr, "Starting proxy on %s with target %s\n", *bindAddr, targetURL.String())
 	err = http.ListenAndServe(*bindAddr, nil)
