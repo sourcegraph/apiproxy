@@ -27,12 +27,18 @@ func Example() {
 
 	// Start apiproxy.
 	cmd := exec.Command(program, "-http=:8090", "-never-revalidate", "-only-revalidate-older-than=24h", target.URL)
-	err := cmd.Start()
-	if err != nil {
-		log.Fatalf("Failed to start %s: %s\n", program, err)
-	}
-	defer cmd.Process.Kill()
-	time.Sleep(150 * time.Millisecond)
+	done := false
+	defer func() {
+		done = true
+		cmd.Process.Kill()
+	}()
+	go func() {
+		out, err := cmd.CombinedOutput()
+		if !done {
+			log.Fatalf("apiproxy exited unexpectedly: %s\n%s", err, out)
+		}
+	}()
+	time.Sleep(250 * time.Millisecond)
 
 	// Hit the target server via apiproxy.
 	httpGet("http://localhost:8090/foo")
@@ -74,8 +80,17 @@ func init() {
 			if err = exec.Command("go", "install").Run(); err != nil {
 				log.Fatal(err)
 			}
+
+			log.Printf("Installed %s", program)
 		} else {
 			log.Fatal(err)
 		}
+	}
+
+	path, err := exec.LookPath(program)
+	if err == nil {
+		log.Printf("Using %s at %s", program, path)
+	} else {
+		log.Fatal(err)
 	}
 }
