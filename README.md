@@ -88,6 +88,18 @@ $ curl -H 'Cache-Control: no-cache' q:8080/chirps
 Note that chirper logs "Listed chirps" after this request.
 
 
+Cache backends
+--------------
+
+Any cache backend that implements
+[`httpcache.Cache`](https://sourcegraph.com/github.com/gregjones/httpcache/symbols/go/github.com/gregjones/httpcache/Cache:type)
+suffices, including:
+
+* [`httpcache.MemoryCache`](https://sourcegraph.com/github.com/gregjones/httpcache/symbols/go/github.com/gregjones/httpcache/MemoryCache:type),
+  instantiated with [`NewMemoryCache() *MemoryCache`](https://sourcegraph.com/github.com/gregjones/httpcache/symbols/go/github.com/gregjones/httpcache/NewMemoryCache)
+* [`diskcache.Cache`](https://sourcegraph.com/github.com/gregjones/httpcache/symbols/go/github.com/gregjones/httpcache/diskcache/Cache:type), instantiated with [`diskcache.New(basePath string) *Cache`](https://sourcegraph.com/github.com/gregjones/httpcache/symbols/go/github.com/gregjones/httpcache/diskcache/New)
+* [`s3cache.Cache`](https://sourcegraph.com/github.com/sourcegraph/s3cache/symbols/go/github.com/sourcegraph/s3cache/Cache:type), instantiated with [`s3cache.New(bucketURL string) *Cache`](https://sourcegraph.com/github.com/sourcegraph/s3cache/symbols/go/github.com/sourcegraph/s3cache/New) (requires env vars `S3_ACCESS_KEY` and `S3_SECRET_KEY`)
+
 Contributing
 ------------
 
