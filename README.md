@@ -23,7 +23,8 @@ go get github.com/sourcegraph/apiproxy
 Usage
 -----
 
-apiproxy supports 2 modes of usage: as a standalone server and as a Go library.
+apiproxy supports 3 modes of usage: as a standalone server, as a Go client, and
+as a Go HTTP server handler.
 
 
 ### As a standalone HTTP proxy server
@@ -45,12 +46,62 @@ http://api.example.com and the responses cached according to the HTTP standard.
 See `apiproxy -h` for more information.
 
 
-### As a Go `http.RoundTripper`
+### As a Go client [`http.RoundTripper`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/RoundTripper:type)
 
-Using apiproxy's
-[`http.RoundTripper`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/RoundTripper:type)
-lets you create HTTP clients and servers that proxy access to APIs. See
-`cmd/apiproxy/apiproxy.go` for a usage example.
+Clients can use [`apiproxy.RevalidationTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RevalidationTransport:type) to modify the caching behavior of HTTP requests by setting a custom [`apiproxy.Validator`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/Validator:type) on the transport. The [`Validator`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/Validator:type) is used to determine whether a cache entry for a URL is still valid at a certain age.
+
+A [`Validator`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/Validator:type) can be created by wrapping a `func(url *url.URL, age time.Duration) bool`
+function with [`apiproxy.ValidatorFunc(...)`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/ValidatorFunc:type) or by using the built-in GitHub API implementation, [`MaxAge`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/service/github/MaxAge:type).
+
+The [`RevalidationTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RevalidationTransport:type) can be used in an [`http.Client`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/Client:type) that is passed to external libraries, to give control over HTTP requests when using libraries whose only configuration point is an [`http.Client`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/Client:type).
+
+The file [`service/github/client_test.go`](https://github.com/sourcegraph/apiproxy/blob/master/service/github/client_test.go)
+contains a full example using the [go-github library](https://github.com/google/go-github), summarized here:
+
+```go
+transport := &apiproxy.RevalidationTransport{
+  Transport: httpcache.NewMemoryCacheTransport(),
+  Check: (&githubproxy.MaxAge{
+    User:         time.Hour * 24,
+    Repository:   time.Hour * 24,
+    Repositories: time.Hour * 24,
+    Activity:     time.Hour * 12,
+  }).Validator(),
+}
+httpClient := &http.Client{Transport: transport}
+
+client := github.NewClient(httpClient)
+```
+
+Now HTTP requests initiated by go-github will be subject to the caching policy set by the custom [`RevalidationTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RevalidationTransport:type).
+
+
+### As a Go server [`http.Handler`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/Handler:type)
+
+The function [`apiproxy.NewCachingSingleHostReverseProxy(target *url.URL, cache
+Cache)
+*httputil.ReverseProxy`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/NewCachingSingleHostReverseProxy)
+returns a simple caching reverse proxy that you can use as an
+`http.Handler`.
+
+You can wrap the handler's `Transport` in an
+['apiproxy.RevalidationTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RevalidationTransport:type)
+to specify custom cache timeout behavior.
+
+The file `cmd/apiproxy/apiproxy.go` contains a full example, summarized here:
+
+```go
+proxy := apiproxy.NewCachingSingleHostReverseProxy("https://api.github.com", httpcache.NewMemoryCache())
+cachingTransport := proxy.Transport.(*httpcache.Transport)
+cachingTransport.Transport = &apiproxy.RevalidationTransport{
+  Check: apiproxy.ValidatorFunc(func(url *url.URL, age time.Duration) bool {
+    // only revalidate expired cache entries older than 30 minutes
+    return age > 30 * time.Minute
+  }),
+}
+http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, proxy))
+http.ListenAndServe(":8080", nil)
+```
 
 
 Examples
