@@ -86,3 +86,10 @@ $ curl -H 'Cache-Control: no-cache' q:8080/chirps
 ```
 
 Note that chirper logs "Listed chirps" after this request.
+
+
+Contributing
+------------
+
+Patches and bug reports welcomed! Report issues and submit pull requests using
+GitHub.
