@@ -31,6 +31,7 @@ HTTP client on any host.
 The included `apiproxy` program runs a proxy server with a specified target URL:
 
 ```bash
+$ go install github.com/sourcegraph/apiproxy/cmd/apiproxy
 $ apiproxy http://api.example.com
 2013/09/13 21:19:57 Starting proxy on :8080 with target http://api.example.com
 ```
@@ -56,7 +57,8 @@ The included `cmd/chirper/chirper.go` example program helps demonstrate
 apiproxy's features. It returns a constantly updating JSON array of "chirps" at
 the path `/chirps`.
 
-1. Run `chirper` in one terminal window.
+1. Run `go run example/chirper/chirper.go` in one terminal window.
+1. Install apiproxy: `go install github.com/sourcegraph/apiproxy/cmd/apiproxy`
 1. Run `apiproxy -http=:8080 -never-revalidate http://localhost:9090` in another terminal window.
 
 Now, let's make a request to the chirper API via apiproxy. Since this is our
