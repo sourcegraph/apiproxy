@@ -1,7 +1,7 @@
 apiproxy
 ========
 
-apiproxy proxies and mocks HTTP APIs.
+apiproxy is a proxy for HTTP/REST APIs with configurable cache timeouts, etc.
 
 **Documentation:** <https://sourcegraph.com/github.com/sourcegraph/apiproxy>
 
