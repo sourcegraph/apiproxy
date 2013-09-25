@@ -5,7 +5,8 @@ apiproxy proxies and mocks HTTP APIs.
 
 **Documentation:** <https://sourcegraph.com/github.com/sourcegraph/apiproxy>
 
-**Build Status:** [![Build Status](https://travis-ci.org/sourcegraph/apiproxy.png?branch=master)](https://travis-ci.org/sourcegraph/apiproxy)
+[![Build Status](https://travis-ci.org/sourcegraph/apiproxy.png?branch=master)](https://travis-ci.org/sourcegraph/apiproxy)
+[![status](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/status.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
 
 
 Installation
