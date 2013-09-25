@@ -7,6 +7,9 @@ apiproxy is a proxy for HTTP/REST APIs with configurable cache timeouts, etc.
 
 [![Build Status](https://travis-ci.org/sourcegraph/apiproxy.png?branch=master)](https://travis-ci.org/sourcegraph/apiproxy)
 [![status](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/status.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
+[![xrefs](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/xrefs.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
+[![funcs](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/funcs.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
+[![top func](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/top-func.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
 
 
 Installation
