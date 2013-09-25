@@ -76,6 +76,17 @@ client := github.NewClient(httpClient)
 Now HTTP requests initiated by go-github will be subject to the caching policy set by the custom [`RevalidationTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RevalidationTransport:type).
 
 
+You can also inject a `Cache-Control: no-cache` header to a specific request if you use [`apiproxy.RequestModifyingTransport`](https://sourcegraph.com/github.com/sourcegraph/apiproxy/symbols/go/github.com/sourcegraph/apiproxy/RequestModifyingTransport:type) as follows:
+
+```go
+// Wrap our transport from above in a RequestModifyingTransport.
+transport = &apiproxy.RequestModifyingTransport{Transport: transport}
+transport.Override(regexp.MustCompile(`^/repos/sourcegraph/apiproxy$`), apiproxy.NoCache, true)
+
+// Now this call to the GitHub API will carry a `Cache-Control: no-cache` header.
+client.Repositories.Get("sourcegraph", "apiproxy")
+```
+
 ### As a Go server [`http.Handler`](https://sourcegraph.com/code.google.com/p/go/symbols/go/code.google.com/p/go/src/pkg/net/http/Handler:type)
 
 The function [`apiproxy.NewCachingSingleHostReverseProxy(target *url.URL, cache
