@@ -10,7 +10,7 @@ apiproxy is a proxy for HTTP/REST APIs with configurable cache timeouts, etc.
 [![xrefs](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/xrefs.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
 [![funcs](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/funcs.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
 [![top func](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/badges/top-func.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
-
+[![Views in the last 24 hours](https://sourcegraph.com/api/repos/github.com/sourcegraph/apiproxy/counters/views-24h.png)](https://sourcegraph.com/github.com/sourcegraph/apiproxy)
 
 Installation
 ------------
