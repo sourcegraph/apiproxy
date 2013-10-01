@@ -19,7 +19,7 @@ func NewCachingSingleHostReverseProxy(target *url.URL, cache httpcache.Cache) *h
 }
 
 // NewSingleHostReverseProxy wraps net/http/httputil.NewSingleHostReverseProxy
-// and sets the Host header.
+// and sets the Host header based on the target URL.
 func NewSingleHostReverseProxy(url *url.URL) *httputil.ReverseProxy {
 	proxy := httputil.NewSingleHostReverseProxy(url)
 	oldDirector := proxy.Director
